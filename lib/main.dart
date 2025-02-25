@@ -38,6 +38,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController inCoin = TextEditingController(text: '');
 
   // ------ Valor de compra y venta
+  String fecha = '';
+  String error = '';
   double compra = -1;
   double venta = -1;
 
@@ -62,8 +64,13 @@ class _MyHomePageState extends State<MyHomePage> {
       String venta2 = resp.split('|')[2];
 
       setState(() {
+        fecha = resp.split('|')[0];
         compra = double.parse(compra2);
         venta = double.parse(venta2);
+      });
+    } else {
+      setState(() {
+        error = 'Error al cargar los datos';
       });
     }
   }
@@ -81,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final sh = size.height;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: color4,
       body: SafeArea(
         child: Padding(
@@ -223,13 +231,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                   if (tc_ctrl) {
                                     double outputDouble =
                                         double.parse(val) * compra;
-                                    outCoin.text = outputDouble.toString();
+                                    if (outputDouble.toString().length > 9) {
+                                      outCoin.text =
+                                          '${outputDouble.toStringAsFixed(3)}...';
+                                    } else {
+                                      outCoin.text = outputDouble.toString();
+                                    }
                                   } else {
                                     if (double.parse(val) >= venta) {
                                       double outputDouble =
                                           double.parse(val) / venta;
-                                      outCoin.text =
-                                          outputDouble.toStringAsFixed(3);
+                                      if (outputDouble.toString().length > 9) {
+                                        outCoin.text =
+                                            '${outputDouble.toStringAsFixed(3)}...';
+                                      } else {
+                                        outCoin.text = outputDouble.toString();
+                                      }
                                     }
                                   }
                                 }
@@ -346,7 +363,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(15, 10, 10, 5),
                       child: Text(
-                        'Los valores de compra y venta son provistos por la pagina de sunat a travez de este enlace:',
+                        'Los valores de compra y venta han sido obtenidos de la página de SUNAT correspondientes al día $fecha. Puedes consultarlos en el siguiente enlace:',
                         style: TextStyle(
                           color: color1,
                           fontWeight: FontWeight.w400,
@@ -386,7 +403,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             style: TextStyle(
                                 fontSize: 10, fontWeight: FontWeight.w600))),
                     Center(
-                        child: Text('Victor Izquierdo',
+                        child: Text('Caleb Izquierdo',
                             style: TextStyle(
                                 fontSize: 10, fontWeight: FontWeight.w600))),
                   ],
